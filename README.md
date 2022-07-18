@@ -48,12 +48,11 @@ Para subir o ambiente vamos executar os passos abaixo
 
 1. Setup do Graylog
 
-Você precisa personalizar o valor GRAYLOG_HTTP_EXTERNAL_URI para que ele aponte para seu host local ou remoto, este é o endereço real do seu cluster ou o IP de acesso do seu minikube
+Os arquivos para deploy do lab Graylog estão no diretório ```<RAIZ_DO_REPO>/kubernetes/graylog```.
 
-```
-  - name: GRAYLOG_HTTP_EXTERNAL_URI
-    value: #your_remote_or_localhost_ip
-```
+Acesse esse diretório para a execução dos comandos:
+
+```cd <RAIZ_DO_REPO>/kubernetes/graylog```
 
 Você deve alterar a senha padrão para fazer login na interface web do Graylog, para isso você deve executar o seguinte
 comando em seu terminal
@@ -62,8 +61,23 @@ comando em seu terminal
 echo -n "Enter Password: " && head -1 </dev/stdin | tr -d '\n' | sha256sum | cut -d " " -f 1
 
 ```
+Este comando solicitará que você insira sua senha e, em seguida, copie a senha com hash gerada e guarde em um arquivo temporário.
 
-Este comando solicitará que você insira sua senha e, em seguida, copie a senha com hash gerada para a variável de ambiente:
+Edit o arquivo graylog-deploy.yaml:
+
+```vim gryalog-deploy.yaml```
+
+Nesse arquivo adicione os valores listados nos próximos passos.
+
+Você precisa personalizar o valor GRAYLOG_HTTP_EXTERNAL_URI para que ele aponte para seu host local ou remoto, este é o endereço real do seu cluster ou o IP de acesso do seu minikube
+
+```
+  - name: GRAYLOG_HTTP_EXTERNAL_URI
+    value: #your_remote_or_localhost_ip
+```
+Inicialmente não altere o valor acima, ajustaremos esse valor após o deploy do serviço.
+
+No passo abaixo adicione a senha que você gerou anteriormente:
 
 ```
   - name: GRAYLOG_ROOT_PASSWORD_SHA2
@@ -86,14 +100,22 @@ kubectl apply -f graylog-deploy.yaml
 Para o acesso funcionar precisamos fazer um ajuste, precisamos pegar o IP real do meu serviço e atualizar a configuração, para isso execute o seguinte comando:
 
 ```
-kubectl get all -n graylog
+kubectl get service -n graylog
 ```
 
-Procure na lista o IP real, altere o arquivo graylog-deploy.yaml
+Procure na lista o IP real referente ao serviço graylog3, altere o arquivo graylog-deploy.yaml adicionando esse IP:
+
+```vim gryalog-deploy.yaml```
 
 ```
   - name: GRAYLOG_HTTP_EXTERNAL_URI
     value: #IP_COLETADO_NO_PASSO_ANTERIOR
+```
+
+Após a alteração do arquivo aplicá-lo novamente:
+
+```
+kubectl apply -f graylog-deploy.yaml
 ```
 
 Você pode verificar a implantação usando o seguinte comando:
