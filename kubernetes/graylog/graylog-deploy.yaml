@@ -22,9 +22,9 @@ spec:
         - name: GRAYLOG_PASSWORD_SECRET
           value: g0ABP9MJnWCjWtBX9JHFgjKAmD3wGXP3E0JQNOKlquDHnCn5689QAF8rRL66HacXLPA6fvwMY8BZoVVw0JqHnSAZorDDOdCk
         - name: GRAYLOG_ROOT_PASSWORD_SHA2
-          value: 6d6edcea1c93df7f546cd4e736371c5794c9d7497bdc28053293c37eb8d350a3
+          value: 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92
         - name: GRAYLOG_HTTP_EXTERNAL_URI
-          value: http://10.101.41.239:9000/
+          value: http://graylog-dev:9000/
         - name: GRAYLOG_ELASTICSEARCH_HOSTS
           value: http://es6:9200
         - name: GRAYLOG_MONGODB_URI
@@ -52,3 +52,26 @@ spec:
     port: 12201
     targetPort: 12201
     #nodePort: 30004
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: graylog3
+  namespace: graylog
+  labels:
+    service: graylog-deploy
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+  - host: graylog-dev
+    http:
+      paths:
+        - path: "/"
+          pathType: Prefix
+          backend:
+            service:
+              name: graylog3
+              port:
+                number: 9000

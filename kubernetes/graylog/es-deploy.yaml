@@ -49,15 +49,15 @@ metadata:
   name: es6
   namespace: graylog
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     service: es-deploy
   ports:
   - name: "9200"
     port: 9200
     targetPort: 9200
-    nodePort: 30001
+    #nodePort: 30001
   - name: "9300"
     port: 9300
     targetPort: 9300
-    nodePort: 30002
+    #nodePort: 30002
